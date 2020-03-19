@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <bean id="goodsDao" class="com.itlike.demo1.GoodsDaoImpl"/>
+    <bean id="myAspect" class="com.itlike.aop.MyAspect"/>
+    <!--配置aop-->
+    <aop:config>
+        <!--配置切入点-->
+        <aop:pointcut id="save_point" expression="execution(* com.itlike.demo1.GoodsDaoImpl.save(..))"/>
+        <aop:pointcut id="update_point" expression="execution(* com.itlike.demo1.GoodsDaoImpl.update(..))"/>
+        <aop:pointcut id="delete_point" expression="execution(* com.itlike.demo1.GoodsDaoImpl.delete(..))"/>
+        <aop:pointcut id="find_point" expression="execution(* com.itlike.demo1.GoodsDaoImpl.find(..))"/>
+        <!--配置切面-->
+        <aop:aspect ref="myAspect">
+            <!--前置通知-->
+            <aop:before method="check" pointcut-ref="save_point"/>
+            <!--后置通知-->
+            <aop:after-returning method="log" pointcut-ref="update_point" returning="res"/>
+            <!--环绕通知-->
+            <aop:around method="arount" pointcut-ref="delete_point"/>
+            <!--异常抛出通知-->
+            <aop:after-throwing method="execeptionNotice" pointcut-ref="find_point" throwing="ex"/>
+            <!--最终通知-->
+            <aop:after method="after" pointcut-ref="find_point"/>
+        </aop:aspect>
+    </aop:config>
+</beans>
